@@ -10,27 +10,25 @@ from aiogram.types import (
     InlineKeyboardButton,
 )
 
-TOKEN = os.getenv("8921151945:AAF6SrInfhTl1ETqHOb5tmxehGgkaiIOKOM")
-LOG_CHANNEL_ID = os.getenv("-1003623768533")
+TOKEN = os.getenv("LUMOVA_BOT_TOKEN")
+
+LOG_CHANNEL_RAW = os.getenv("LUMOVA_LOG_CHANNEL_ID")
+LOG_CHANNEL_ID = int(LOG_CHANNEL_RAW) if LOG_CHANNEL_RAW else None
 
 SITE_URL = "https://lumova-site.vercel.app/"
 
-if not TOKEN:
-    raise RuntimeError("Не задана переменная LUMOVA_BOT_TOKEN")
-
-if not LOG_CHANNEL_ID:
-    raise RuntimeError("Не задана переменная LUMOVA_LOG_CHANNEL_ID")
-
-LOG_CHANNEL_ID = int(LOG_CHANNEL_ID)
-
-bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
 
-async def log_event(bot: Bot, event: str, user) -> None:
-    """Отправляет событие в закрытый Telegram-канал."""
+async def log_event(bot: Bot, event: str, user):
+    if not LOG_CHANNEL_ID:
+        print("Не задан ID канала для логов")
+        return
+
     username = f"@{user.username}" if user.username else "нет"
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    timestamp = datetime.now(timezone.utc).strftime(
+        "%Y-%m-%d %H:%M:%S UTC"
+    )
 
     text = (
         "📊 Lumova — событие\n\n"
@@ -46,46 +44,36 @@ async def log_event(bot: Bot, event: str, user) -> None:
         print(f"Ошибка записи в канал: {error}")
 
 
-def main_menu() -> InlineKeyboardMarkup:
+def main_menu():
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="🏢 Расчётный счёт",
-                    callback_data="rko",
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text="💳 Банковские карты",
-                    callback_data="cards",
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text="⚖️ Сравнить предложения",
-                    callback_data="compare",
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text="🌐 Сайт Lumova",
-                    url=SITE_URL,
-                )
-            ],
+            [InlineKeyboardButton(
+                text="🏢 Расчётный счёт",
+                callback_data="rko"
+            )],
+            [InlineKeyboardButton(
+                text="💳 Банковские карты",
+                callback_data="cards"
+            )],
+            [InlineKeyboardButton(
+                text="⚖️ Сравнить предложения",
+                callback_data="compare"
+            )],
+            [InlineKeyboardButton(
+                text="🌐 Сайт Lumova",
+                url=SITE_URL
+            )],
         ]
     )
 
 
-def back_menu() -> InlineKeyboardMarkup:
+def back_menu():
     return InlineKeyboardMarkup(
         inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="⬅️ Главное меню",
-                    callback_data="menu",
-                )
-            ]
+            [InlineKeyboardButton(
+                text="⬅️ Главное меню",
+                callback_data="menu"
+            )]
         ]
     )
 
@@ -109,7 +97,8 @@ async def help_command(message: Message, bot: Bot):
 
     await message.answer(
         "ℹ️ Lumova — сервис для поиска банковских предложений.\n\n"
-        "Выберите интересующий раздел в главном меню."
+        "Выберите интересующий раздел в главном меню.",
+        reply_markup=main_menu(),
     )
 
 
@@ -130,8 +119,7 @@ async def rko_callback(callback: CallbackQuery, bot: Bot):
 
     await callback.message.edit_text(
         "🏢 Расчётный счёт для бизнеса\n\n"
-        "Здесь будут представлены предложения банков "
-        "для ИП и ООО.\n\n"
+        "Здесь будут представлены предложения банков для ИП и ООО.\n\n"
         "Каталог предложений сейчас готовится.",
         reply_markup=back_menu(),
     )
