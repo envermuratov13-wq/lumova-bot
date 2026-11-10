@@ -6,8 +6,8 @@ from aiogram.types import Update
 
 from bot import dp
 
-TOKEN = os.getenv("8921151945:AAF6SrInfhTl1ETqHOb5tmxehGgkaiIOKOM")
-WEBHOOK_SECRET = os.getenv("RKODENGIZHEKADIMAENVERAIDER77bazaDANIH")
+TOKEN = os.getenv("LUMOVA_BOT_TOKEN")
+WEBHOOK_SECRET = os.getenv("TELEGRAM_WEBHOOK_SECRET")
 
 app = FastAPI()
 
@@ -30,19 +30,13 @@ async def telegram_webhook(request: Request):
     )
 
     if secret != WEBHOOK_SECRET:
-        raise HTTPException(
-            status_code=403,
-            detail="Forbidden",
-        )
+        raise HTTPException(status_code=403, detail="Forbidden")
 
     try:
         data = await request.json()
         update = Update.model_validate(data)
     except Exception:
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid Telegram update",
-        )
+        raise HTTPException(status_code=400, detail="Invalid update")
 
     telegram_bot = Bot(token=TOKEN)
 
