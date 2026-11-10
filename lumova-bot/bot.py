@@ -10,8 +10,8 @@ from aiogram.types import (
     InlineKeyboardButton,
 )
 
-TOKEN = os.getenv("LUMOVA_BOT_TOKEN")
-LOG_CHANNEL_ID = os.getenv("LUMOVA_LOG_CHANNEL_ID")
+TOKEN = os.getenv("8921151945:AAF6SrInfhTl1ETqHOb5tmxehGgkaiIOKOM")
+LOG_CHANNEL_ID = os.getenv("-1003623768533")
 
 SITE_URL = "https://lumova-site.vercel.app/"
 
